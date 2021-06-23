@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker_app/app/common_widgets/form_submit_button.dart';
+import 'package:time_tracker_app/app/common_widgets/show_alert_dialogs.dart';
 import 'package:time_tracker_app/app/sign_in/validator.dart';
 import 'package:time_tracker_app/services/auth.dart';
 
@@ -37,7 +38,12 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       }
       Navigator.of(context).pop();
     } catch (e) {
-      print(e.toString());
+      showAlertDialogs(
+        context,
+        title: 'Sign in',
+        content: e.toString(),
+        defaultActionText: 'OK',
+      );
     } finally {
       setState(() {
         _isLoading = false;
