@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker_app/app/common_widgets/form_submit_button.dart';
-import 'package:time_tracker_app/app/common_widgets/show_alert_dialogs.dart';
+import 'package:time_tracker_app/app/common_widgets/show_exception_alert_dialog.dart';
 import 'package:time_tracker_app/app/sign_in/validator.dart';
 import 'package:time_tracker_app/services/auth.dart';
 
@@ -22,6 +23,15 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   final FocusNode _passwordFocusNode = FocusNode();
   bool _submitted = false;
   bool _isLoading = false;
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
+
   void _submit() async {
     setState(() {
       _submitted = true;
@@ -36,19 +46,17 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
         await auth.createUserWithEmailAndPassword(_email, _password);
       }
       Navigator.of(context).pop();
-    } catch (e) {
-      showAlertDialogs(
+    } on FirebaseAuthException catch (e) {
+      showExceptionAlertDialog(
         context,
-        title: 'Sign in',
-        content: e.toString(),
-        defaultActionText: 'OK',
+        title: 'Sign in failed',
+        exception: e,
       );
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
-    // Navigator.of(context).pop();
   }
 
   void _emailEditingComplete() {
