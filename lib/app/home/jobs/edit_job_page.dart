@@ -33,7 +33,7 @@ class _EditJobPageState extends State<EditJobPage> {
   @override
   void initState() {
     super.initState();
-    print(widget.job);
+
     if (widget.job != null) {
       _name = widget.job.name;
       _ratePerHour = widget.job.ratePerHour;
