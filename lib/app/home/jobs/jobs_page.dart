@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:time_tracker_app/app/common_widgets/show_alert_dialogs.dart';
 import 'package:time_tracker_app/app/home/jobs/edit_job_page.dart';
 import 'package:time_tracker_app/app/home/jobs/job_list_title.dart';
+import 'package:time_tracker_app/app/home/jobs/list_items_builder.dart';
 import 'package:time_tracker_app/app/home/model/jobs_models.dart';
 import 'package:time_tracker_app/services/auth.dart';
 import 'package:time_tracker_app/services/database.dart';
@@ -38,10 +39,13 @@ class JobsPage extends StatelessWidget {
         actions: [
           ElevatedButton(
             onPressed: () => _confirmSignOut(context),
-            child: Text('Log out' ,             style: TextStyle(
+            child: Text(
+              'Log out',
+              style: TextStyle(
                 fontSize: 18.0,
                 color: Colors.white,
-              ),),
+              ),
+            ),
           ),
         ],
       ),
@@ -58,25 +62,12 @@ class JobsPage extends StatelessWidget {
     return StreamBuilder<List<Job>>(
         stream: database.jobsStream(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final jobs = snapshot.data;
-            final children = jobs
-                .map((job) => JobListTile(
-                      job: job,
-                      onTap:() => EditJobPage.show(context,job: job),
-                    ))
-                .toList();
-            return ListView(
-              children: children,
-            );
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Some error occured'),
-            );
-          }
-          return Center(
-            child: CircularProgressIndicator(),
+          return ListItemsBuilder<Job>(
+            snapshot: snapshot,
+            itemBuilder: (context, job) => JobListTile(
+              job: job,
+              onTap: () => EditJobPage.show(context, job: job),
+            ),
           );
         });
   }
