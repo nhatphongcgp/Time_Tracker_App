@@ -1,16 +1,17 @@
 import 'package:meta/meta.dart';
 
 class Job {
-  Job({@required this.name, @required this.ratePerHour});
+  Job({@required this.id, @required this.name, @required this.ratePerHour});
+  final String id;
   final String name;
   final int ratePerHour;
-  factory Job.fromMap(Map<String, dynamic> data) {
+  factory Job.fromMap(Map<String, dynamic> data, String doucumentId) {
     if (data == null) {
       return null;
     }
     final String name = data['name'];
-    final int ratePerHour = data['rateperHour'];
-    return Job(name: name, ratePerHour: ratePerHour);
+    final int ratePerHour = data['ratePerHour'];
+    return Job(id:doucumentId,name: name, ratePerHour: ratePerHour);
   }
   Map<String, dynamic> toMap() {
     return {

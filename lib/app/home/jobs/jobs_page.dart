@@ -1,9 +1,9 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker_app/app/common_widgets/show_alert_dialogs.dart';
-import 'package:time_tracker_app/app/common_widgets/show_exception_alert_dialog.dart';
-import 'package:time_tracker_app/app/model/jobs_models.dart';
+import 'package:time_tracker_app/app/home/jobs/edit_job_page.dart';
+import 'package:time_tracker_app/app/home/jobs/job_list_title.dart';
+import 'package:time_tracker_app/app/home/model/jobs_models.dart';
 import 'package:time_tracker_app/services/auth.dart';
 import 'package:time_tracker_app/services/database.dart';
 
@@ -18,28 +18,15 @@ class JobsPage extends StatelessWidget {
   }
 
   Future<void> _confirmSignOut(BuildContext context) async {
-    final didRequestSignout = await showAlertDialogs(
+    final didRequestSignOut = await showAlertDialogs(
       context,
       title: 'Log out',
       content: 'Are you sure that you want to logout',
       defaultActionText: 'Logout',
       cancelActionText: 'Cancel',
     );
-    if (didRequestSignout == true) {
+    if (didRequestSignOut == true) {
       _signOut(context);
-    }
-  }
-
-  Future<void> _createJob(BuildContext context) async {
-    try {
-      final database = Provider.of<Database>(context, listen: false);
-      await database.createJob(Job(name: 'Blogging', ratePerHour: 10));
-    } on FirebaseException catch (e) {
-      showExceptionAlertDialog(
-        context,
-        title: 'Operation failed',
-        exception: e,
-      );
     }
   }
 
@@ -51,13 +38,16 @@ class JobsPage extends StatelessWidget {
         actions: [
           ElevatedButton(
             onPressed: () => _confirmSignOut(context),
-            child: Text('Log out'),
+            child: Text('Log out' ,             style: TextStyle(
+                fontSize: 18.0,
+                color: Colors.white,
+              ),),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () => _createJob(context),
+        onPressed: () => EditJobPage.show(context),
       ),
       body: _buildContents(context),
     );
@@ -70,7 +60,12 @@ class JobsPage extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final jobs = snapshot.data;
-            final children = jobs.map((job) => Text(job.name)).toList();
+            final children = jobs
+                .map((job) => JobListTile(
+                      job: job,
+                      onTap:() => EditJobPage.show(context,job: job),
+                    ))
+                .toList();
             return ListView(
               children: children,
             );
